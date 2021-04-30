@@ -1,4 +1,8 @@
 import json
+import geopandas as gpd
+import pandas as pd
+import matplotlib.pyplot as plt
+from shapely.geometry import Point,Polygon
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -100,7 +104,15 @@ def loadCentroPoblado(Departamentos,data):
                         centrosPobladosguardar.append(z)
                 k.addCentrosPoblados(centrosPobladosguardar)
 
-    
+def loadMapa(centrosPoblados):
+    stree_map = gpd.read_file("D:\Proyectos\Complejidad\TrabajoParcial\departamentos\DEPARTAMENTOS.shp")
+   
+    geometry = []
+    for i in centrosPoblados:
+        geometry.append(Point(i.longitud,i.latitud))
+    pdf = pd.DataFrame(centrosPoblados)
+    print(pdf)
+
 
 
 
@@ -113,5 +125,12 @@ def LoadData():
     loadProvincias(Departamentos,data)
     loadDistritos(Departamentos,data)
     loadCentroPoblado(Departamentos,data)
-    print(Departamentos)
+    loadMapa(Departamentos[0].provincias[0].distritos[0].centrosPoblados)
+
+    #load mapa
+    #stree_map = gpd.read_file("D:\Proyectos\Complejidad\TrabajoParcial\departamentos\DEPARTAMENTOS.shp")
+    #fig, ax = plt.subplots(figsize=(15,15))
+    #stree_map.plot(ax = ax)
+    
+    
 LoadData()
