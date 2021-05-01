@@ -3,6 +3,7 @@ import geopandas as gpd
 import pandas as pd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point,Polygon
+import networkx as nx
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -35,8 +36,21 @@ class CentroPoblado:
         self.distrito = distrito
         self.provincia = provincia
         self.nombreCentroPoblado = nombreCentroPoblado
-        self.departamento = departamento            
-
+        self.departamento = departamento
+        #self.Point = Point(self.longitud,self.latitud)            
+    def __str__(self):
+        return str(self.__dict__)
+    def to_dict(self):
+        return {
+            'latitud': self.latitud,
+            'longitud':self.longitud,
+            'viviendas':self.viviendas,
+            'poblacion':self.poblacion,
+            'distrito':self.distrito,
+            'provincia':self.provincia,
+            'departamento':self.departamento,
+            'nombreCentroPoblado':self.nombreCentroPoblado        
+            }
 
 def loadDepartamentos(data):
     ListOfDepartamentos = []
@@ -48,6 +62,7 @@ def loadDepartamentos(data):
         Departamentoguardar = Departamento(i)
         Departamentos.append(Departamentoguardar)
     return Departamentos
+
 
 
 def loadProvincias(departamentos,data):
@@ -104,20 +119,37 @@ def loadCentroPoblado(Departamentos,data):
                         centrosPobladosguardar.append(z)
                 k.addCentrosPoblados(centrosPobladosguardar)
 
-def loadMapa(centrosPoblados):
-    stree_map = gpd.read_file("D:\Proyectos\Complejidad\TrabajoParcial\departamentos\DEPARTAMENTOS.shp")
-   
-    geometry = []
+def createGraph(centrosPoblados):
+
+    G = nx.Graph()
     for i in centrosPoblados:
-        geometry.append(Point(i.longitud,i.latitud))
-    pdf = pd.DataFrame(centrosPoblados)
-    print(pdf)
+        G.add_node(i.nombreCentroPoblado)
+        G.nodes[i.nombreCentroPoblado]['nombre'] = i.nombreCentroPoblado
+    
+    for i,datai in G.nodes(data= True):
+        for j, dataj in G.nodes(data = True):
+           G.add_edge(i,j)
+    nx.draw(G)
+
+def loadMapa(centrosPoblados):
+    street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
+    df = pd.DataFrame.from_records([centro.to_dict() for centro in centrosPoblados])
+    crs = {'init':'epsg:4326'}
+    geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
+    geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
+    fig,ax = plt.subplots(figsize=(55,55))
+    street_map.plot(ax = ax,alpha = 0.4, color="grey")
+    geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
+    plt.legend(prop={'size':15})
+    createGraph(centrosPoblados)
+
+    
 
 
 
 
 def LoadData():
-    f = open('D:\Proyectos\Complejidad\TrabajoParcial\Data.json',)
+    f = open('TrabajoParcial/Data.json',)
     data = json.load(f)
     f.close()
     
@@ -125,12 +157,6 @@ def LoadData():
     loadProvincias(Departamentos,data)
     loadDistritos(Departamentos,data)
     loadCentroPoblado(Departamentos,data)
-    loadMapa(Departamentos[0].provincias[0].distritos[0].centrosPoblados)
-
-    #load mapa
-    #stree_map = gpd.read_file("D:\Proyectos\Complejidad\TrabajoParcial\departamentos\DEPARTAMENTOS.shp")
-    #fig, ax = plt.subplots(figsize=(15,15))
-    #stree_map.plot(ax = ax)
-    
+    loadMapa(Departamentos[1].provincias[0].distritos[0].centrosPoblados)
     
 LoadData()
