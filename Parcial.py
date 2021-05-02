@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point,Polygon
 import networkx as nx
+import math
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -119,28 +120,40 @@ def loadCentroPoblado(Departamentos,data):
                         centrosPobladosguardar.append(z)
                 k.addCentrosPoblados(centrosPobladosguardar)
 
+def getDistancia(nodo1,nodo2):
+    x1,x2 = int(nodo1['latitud']),int(nodo2['latitud'])
+    y1,y2 = int(nodo1['longitud']),int(nodo2['longitud'])
+
+    d1 = pow(x2-x1,2)
+    d2 = pow(y2-y1,2)
+    distancia = math.sqrt(d1+d2)
+    return int(distancia)
+
 def createGraph(centrosPoblados):
 
     G = nx.Graph()
     for i in centrosPoblados:
         G.add_node(i.nombreCentroPoblado)
         G.nodes[i.nombreCentroPoblado]['nombre'] = i.nombreCentroPoblado
+        G.nodes[i.nombreCentroPoblado]['latitud'] = i.latitud
+        G.nodes[i.nombreCentroPoblado]['longitud'] = i.longitud
     
     for i,datai in G.nodes(data= True):
         for j, dataj in G.nodes(data = True):
            G.add_edge(i,j)
-    nx.draw(G)
+           G[i][j]['weight'] = getDistancia(datai,dataj)
+    nx.draw_networkx(G)
 
 def loadMapa(centrosPoblados):
-    street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
-    df = pd.DataFrame.from_records([centro.to_dict() for centro in centrosPoblados])
-    crs = {'init':'epsg:4326'}
-    geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
-    geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
-    fig,ax = plt.subplots(figsize=(55,55))
-    street_map.plot(ax = ax,alpha = 0.4, color="grey")
-    geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
-    plt.legend(prop={'size':15})
+    #street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
+    #df = pd.DataFrame.from_records([centro.to_dict() for centro in centrosPoblados])
+    #crs = {'init':'epsg:4326'}
+    #geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
+    #geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
+    #fig,ax = plt.subplots(figsize=(55,55))
+    #street_map.plot(ax = ax,alpha = 0.4, color="grey")
+    #geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
+    #plt.legend(prop={'size':15})
     createGraph(centrosPoblados)
 
     
