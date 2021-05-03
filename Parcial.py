@@ -1,10 +1,12 @@
 import json
-import geopandas as gpd
+#import geopandas as gpd
 import pandas as pd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point,Polygon
 import networkx as nx
 import math
+from itertools import permutations
+
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -121,13 +123,41 @@ def loadCentroPoblado(Departamentos,data):
                 k.addCentrosPoblados(centrosPobladosguardar)
 
 def getDistancia(nodo1,nodo2):
-    x1,x2 = int(nodo1['latitud']),int(nodo2['latitud'])
-    y1,y2 = int(nodo1['longitud']),int(nodo2['longitud'])
+    x1,x2 = float(nodo1['latitud']),float(nodo2['latitud'])
+    y1,y2 = float(nodo1['longitud']),float(nodo2['longitud'])
 
-    d1 = pow(x2-x1,2)
-    d2 = pow(y2-y1,2)
+
+    d1 = pow((x2-x1),2)
+    d2 = pow((y2-y1),2)
     distancia = math.sqrt(d1+d2)
-    return int(distancia)
+    return float(distancia)
+
+def getTotalDistance(path,G):
+    result = 0
+    for i in range(len(path)-1):
+        result+= G[path[i][0]][path[i+1][0]]['weight']
+    result+= G[path[len(path)-1][0]][path[0][0]]['weight']
+    return result
+    
+            
+
+        
+
+def findTspBruteForce(G):
+    allPaths = []
+    results = []
+    for path in permutations(G.nodes(data = True)):
+        allPaths.append(path)
+    
+    for path in allPaths:
+        results.append(getTotalDistance(path,G))
+
+    lowerResult = 10000
+    for i in results:
+        if(i < lowerResult):
+            lowerResult = i
+    return allPaths[results.index(lowerResult)]
+
 
 def createGraph(centrosPoblados):
 
@@ -140,12 +170,19 @@ def createGraph(centrosPoblados):
     
     for i,datai in G.nodes(data= True):
         for j, dataj in G.nodes(data = True):
-           G.add_edge(i,j)
-           G[i][j]['weight'] = getDistancia(datai,dataj)
-    nx.draw_networkx(G)
+            if(i != j):
+                G.add_edge(i,j)
+                G[i][j]['weight'] = getDistancia(datai,dataj)
+    #nx.draw_networkx(G)
+    #Fuerza Bruta
+    path = findTspBruteForce(G)
+    for i in path:
+        print(i[0])
+        print("->")
+    
 
 def loadMapa(centrosPoblados):
-    #street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
+    street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
     #df = pd.DataFrame.from_records([centro.to_dict() for centro in centrosPoblados])
     #crs = {'init':'epsg:4326'}
     #geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
@@ -154,9 +191,17 @@ def loadMapa(centrosPoblados):
     #street_map.plot(ax = ax,alpha = 0.4, color="grey")
     #geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
     #plt.legend(prop={'size':15})
-    createGraph(centrosPoblados)
-
     
+def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distritoNombre):
+    for i in Departamentos:
+        if(i.nombreDepartamento == departamentoNombre):
+            Provincias = i.provincias
+    for i in Provincias:
+        if(i.nombreProvincia == provinciaNombre):
+            Distritos = i.distritos
+    for i in Distritos:
+        if(i.nombreDistrito == distritoNombre):
+            return i.centrosPoblados
 
 
 
@@ -170,6 +215,8 @@ def LoadData():
     loadProvincias(Departamentos,data)
     loadDistritos(Departamentos,data)
     loadCentroPoblado(Departamentos,data)
-    loadMapa(Departamentos[1].provincias[0].distritos[0].centrosPoblados)
-    
+    #la libertad / provincia de pataz / distrito de pataz
+    centrosPoblados = selectSpecificCenter(Departamentos,"LA LIBERTAD","PATAZ","PATAZ")
+    #loadMapa(centrosPoblados)
+    createGraph(centrosPoblados)
 LoadData()
