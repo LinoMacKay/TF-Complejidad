@@ -1,12 +1,10 @@
 import json
-#import geopandas as gpd
 import pandas as pd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point,Polygon
 import networkx as nx
 import math
 from itertools import permutations
-
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -122,42 +120,20 @@ def loadCentroPoblado(Departamentos,data):
                         centrosPobladosguardar.append(z)
                 k.addCentrosPoblados(centrosPobladosguardar)
 
-def getDistancia(nodo1,nodo2):
-    x1,x2 = float(nodo1['latitud']),float(nodo2['latitud'])
-    y1,y2 = float(nodo1['longitud']),float(nodo2['longitud'])
-
-
-    d1 = pow((x2-x1),2)
-    d2 = pow((y2-y1),2)
-    distancia = math.sqrt(d1+d2)
-    return float(distancia)
-
 def getTotalDistance(path,G):
     result = 0
     for i in range(len(path)-1):
         result+= G[path[i][0]][path[i+1][0]]['weight']
     result+= G[path[len(path)-1][0]][path[0][0]]['weight']
     return result
-    
-            
 
-        
-
-def findTspBruteForce(G):
-    allPaths = []
-    results = []
-    for path in permutations(G.nodes(data = True)):
-        allPaths.append(path)
-    
-    for path in allPaths:
-        results.append(getTotalDistance(path,G))
-
-    lowerResult = 10000
-    for i in results:
-        if(i < lowerResult):
-            lowerResult = i
-    return allPaths[results.index(lowerResult)]
-
+def getDistancia(nodo1,nodo2):
+    x1,x2 = float(nodo1['latitud']),float(nodo2['latitud'])
+    y1,y2 = float(nodo1['longitud']),float(nodo2['longitud'])
+    d1 = pow(x2-x1,2)
+    d2 = pow(y2-y1,2)
+    distancia = math.sqrt(d1+d2)
+    return float(distancia)
 
 def createGraph(centrosPoblados):
 
@@ -174,24 +150,11 @@ def createGraph(centrosPoblados):
                 G.add_edge(i,j)
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
-    #Fuerza Bruta
     path = findTspBruteForce(G)
     for i in path:
         print(i[0])
         print("->")
-    
 
-def loadMapa(centrosPoblados):
-    street_map = gpd.read_file("TrabajoParcial/departamentos/DEPARTAMENTOS.shp")
-    #df = pd.DataFrame.from_records([centro.to_dict() for centro in centrosPoblados])
-    #crs = {'init':'epsg:4326'}
-    #geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
-    #geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
-    #fig,ax = plt.subplots(figsize=(55,55))
-    #street_map.plot(ax = ax,alpha = 0.4, color="grey")
-    #geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
-    #plt.legend(prop={'size':15})
-    
 def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distritoNombre):
     for i in Departamentos:
         if(i.nombreDepartamento == departamentoNombre):
@@ -204,19 +167,82 @@ def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distri
             return i.centrosPoblados
 
 
+def findTspBruteForce(G):
+    allPaths = []
+    results = []
+    for path in permutations(G.nodes(data = True)):
+            allPaths.append(path)
+
+    if(G.size()) > 1:
+        for path in allPaths:
+            results.append(getTotalDistance(path,G))
+
+        lowerResult = 10000
+        for i in results:
+            if(i < lowerResult):
+                lowerResult = i
+        return allPaths[results.index(lowerResult)]
+    else:
+        return allPaths[0]
+
+def loadMapa(CentrosPoblados):
+    crs ='epsg:4326'
+    #street_map = gpd.read_file("TrabajoParcial\departamentos\DEPARTAMENTOS.shx")
+    #street_map.head()
+    #fig,ax = plt.subplots(figsize=(55,55))
+    #street_map.plot(ax = ax,alpha = 0.4, color="grey")
+    #df = street_map.DataFrame.from_records([centro.to_dict() for centro in CentrosPoblados])
+    #geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
+    #geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
+    #geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
+    #plt.legend(prop={'size':15})
+
+def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
+    distritos = []
+    for departamento in data:
+        for provincia in departamento.provincias:
+            if(departamento.nombreDepartamento == Departamento and provincia.nombreProvincia == Provincia):
+                distritos = provincia.distritos
+
+    for distrito in distritos:
+        centrosPoblados = selectSpecificCenter(data,Departamento,Provincia,distrito.nombreDistrito)
+        createGraph(centrosPoblados)
+
+def getProvinciasByDepartamentoName(Departamento,data):
+    provincias = []
+    for departamento in data:
+        if(departamento.nombreDepartamento == Departamento):
+            provincias = departamento.provincias
+    return provincias
 
 
 def LoadData():
-    f = open('TrabajoParcial/Data.json',)
+    f = open('Data.json',)
     data = json.load(f)
     f.close()
     
-    Departamentos = loadDepartamentos(data)
-    loadProvincias(Departamentos,data)
-    loadDistritos(Departamentos,data)
-    loadCentroPoblado(Departamentos,data)
-    #la libertad / provincia de pataz / distrito de pataz
-    centrosPoblados = selectSpecificCenter(Departamentos,"LA LIBERTAD","PATAZ","PATAZ")
+    DataToUse = loadDepartamentos(data)
+    loadProvincias(DataToUse,data)
+    loadDistritos(DataToUse,data)
+    loadCentroPoblado(DataToUse,data)
+    
+    print("Escriba una Departamento y Provincia \n")
+    for departamento in DataToUse:
+        print(departamento.nombreDepartamento)
+    Departamento = input()
+    Departamento = Departamento.upper()
+    ProvinciasDisponibles = getProvinciasByDepartamentoName(Departamento,DataToUse)
+
+    print("Escriba una provincia \n")
+    for provincia in ProvinciasDisponibles:
+        print(provincia.nombreProvincia)
+    Provincia = input()
+    Provincia = Provincia.upper()
+    print("\n")
+    getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
+    
+    
     #loadMapa(centrosPoblados)
-    createGraph(centrosPoblados)
+    
+    
 LoadData()
