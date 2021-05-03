@@ -108,7 +108,7 @@ def loadDistritos(departamentos,data):
 def loadCentroPoblado(Departamentos,data):
     centrosPoblados = []
     for i in data:
-        CentroPobladoGuardar = CentroPoblado(i['LATITUD'],i['LONGITUD'],i['VIVIENDAS'],i['POBLACIï¿½N'],i['DISTRITO'],i['PROVINCIA'],i['DEPARTAMENTO'],i['CENTRO POBLADO'])
+        CentroPobladoGuardar = CentroPoblado(i['LATITUD'],i['LONGITUD'],i['NMI1'],i['NMI2'],i['DISTRITO'],i['PROVINCIA'],i['DEPARTAMENTO'],i['CENTRO POBLADO'])
         centrosPoblados.append(CentroPobladoGuardar)
     
     for i in Departamentos:
@@ -217,7 +217,7 @@ def getProvinciasByDepartamentoName(Departamento,data):
 
 
 def LoadData():
-    f = open('Data.json',)
+    f = open('Data2.json',encoding='UTF-8')
     data = json.load(f)
     f.close()
     
