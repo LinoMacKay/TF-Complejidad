@@ -136,13 +136,18 @@ def getDistancia(nodo1,nodo2):
     return float(distancia)
 
 def createGraph(centrosPoblados):
-
     G = nx.Graph()
+    x=0
     for i in centrosPoblados:
-        G.add_node(i.nombreCentroPoblado)
-        G.nodes[i.nombreCentroPoblado]['nombre'] = i.nombreCentroPoblado
-        G.nodes[i.nombreCentroPoblado]['latitud'] = i.latitud
-        G.nodes[i.nombreCentroPoblado]['longitud'] = i.longitud
+        n=len(list(i))
+        for j in range(n):
+            G.add_node(i[j].nombreCentroPoblado)
+            G.nodes[i[j].nombreCentroPoblado]['nombre'] = i[j].nombreCentroPoblado
+            G.nodes[i[j].nombreCentroPoblado]['latitud'] = i[j].latitud
+            G.nodes[i[j].nombreCentroPoblado]['longitud'] = i[j].longitud
+        x+=1
+
+    
     
     for i,datai in G.nodes(data= True):
         for j, dataj in G.nodes(data = True):
@@ -150,9 +155,11 @@ def createGraph(centrosPoblados):
                 G.add_edge(i,j)
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
-    path = findTspBruteForce(G)
+    #path = findTspBruteForce(G)
+    path = bfs(G)
+
     for i in path:
-        print(i[0])
+        print(i)
         print("->")
 
 def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distritoNombre):
@@ -185,6 +192,30 @@ def findTspBruteForce(G):
     else:
         return allPaths[0]
 
+def bfs(G):
+    
+    print(G.nodes())
+    print("Elige el elemento que desees: ")
+    a=input()
+    queue = [a]
+    bfs_traversal_output = []
+    for u in G.nodes:
+        G.nodes[u]['visited']= False
+        G.nodes[u]['π']= -1
+    G.nodes[a]['visited'] = True
+    while queue:
+        u = queue[0]
+        bfs_traversal_output.append(u)
+        for v in G.neighbors(u):
+            if not G.nodes[v]['visited']:
+                G.nodes[v]['visited'] = True
+                G.nodes[v]['π'] = u
+                queue.append(v)
+        del queue[0]
+
+    return bfs_traversal_output
+    
+
 def loadMapa(CentrosPoblados):
     crs ='epsg:4326'
     #street_map = gpd.read_file("TrabajoParcial\departamentos\DEPARTAMENTOS.shx")
@@ -199,14 +230,17 @@ def loadMapa(CentrosPoblados):
 
 def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
     distritos = []
+    centrosPoblados = []
     for departamento in data:
         for provincia in departamento.provincias:
             if(departamento.nombreDepartamento == Departamento and provincia.nombreProvincia == Provincia):
                 distritos = provincia.distritos
 
+
     for distrito in distritos:
-        centrosPoblados = selectSpecificCenter(data,Departamento,Provincia,distrito.nombreDistrito)
-        createGraph(centrosPoblados)
+        centrosPoblados.append(selectSpecificCenter(data,Departamento,Provincia,distrito.nombreDistrito))
+    return centrosPoblados
+
 
 def getProvinciasByDepartamentoName(Departamento,data):
     provincias = []
@@ -239,8 +273,8 @@ def LoadData():
     Provincia = input()
     Provincia = Provincia.upper()
     print("\n")
-    getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
-    
+    centrosPoblados=getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
+    createGraph(centrosPoblados)
     
     #loadMapa(centrosPoblados)
     
