@@ -10,7 +10,8 @@
   Luis Martín Canaval Sánchez
 # Alumnos
  - U201819681 Mac Kay Rodriguez, Lino Raul
- - u20181a275 Tejada Silva, Cledmir Gerardo
+ - U20181a275 Tejada Silva, Cledmir Gerardo
+ - U20181a576 Jauregui Gonzales, Daniel
 
 
 # Introducción
@@ -41,3 +42,8 @@ La "Búsqueda por fuerza bruta" consiste en generar permutaciones de todas las p
 Un grafo es un conjunto de objetos llamados vértices o nodos unidos por enlaces llamados aristas o arcos, que permiten representar relaciones binarias entre elementos de un conjunto.
 
 ![Grafo](https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/6n-graf.svg/250px-6n-graf.svg.png)
+
+# DFS
+DFS es un algoritmo de búsqueda que se utiliza en gráfos. La estrategia de DFS es buscar en profundida, en base a un nodo elegido como inicio recorre los nodos de forma recurrente y se va "expandiendo" hasta que no encuentre un nodo donde continuar y utliza "BackTracking" para repetir el mismo proceso en los nodos vecinos.
+
+![DFS](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Depth-first-tree.svg/250px-Depth-first-tree.svg.png)
