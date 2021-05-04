@@ -47,3 +47,26 @@ Un grafo es un conjunto de objetos llamados vértices o nodos unidos por enlaces
 DFS es un algoritmo de búsqueda que se utiliza en gráfos. La estrategia de DFS es buscar en profundida, en base a un nodo elegido como inicio recorre los nodos de forma recurrente y se va "expandiendo" hasta que no encuentre un nodo donde continuar y utliza "BackTracking" para repetir el mismo proceso en los nodos vecinos.
 
 ![DFS](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Depth-first-tree.svg/250px-Depth-first-tree.svg.png)
+
+# Implementacion
+- Generacion del Grafo
+  - Para la generación del grafo convertimos el Dataframe a Json mediante https://mapshaper.org/ y lo leemos. 
+  - Luego lo convertimos a un arreglo  de objetos que tienen todos los departamentos posibles, y estos contienen sus provincias , así hasta obtener los centros poblados. 
+  - Nuestro grafo se genera en base al Departamento y provincia que el usuario ingresa, luego itera creando multiples grafos segun los distritos de las provincias.
+ 
+    ![Paso1](https://media.discordapp.net/attachments/708078392376950807/839264895354273852/unknown.png)
+    
+    ![Paso2](https://media.discordapp.net/attachments/708078392376950807/839265044888813588/unknown.png)
+- Resolucion del problema
+  - Luego de generar el grafo, se aplica la solucion deseada y este retorna un arreglo que contiene el camino para luego imprimirlo y continuar con todos los centros poblados       restantes.
+  
+    ![Paso3](https://media.discordapp.net/attachments/708078392376950807/839264989244424212/unknown.png)
+    
+  - En caso de que solo exista 1 centro poblado en algun distrito, este retorna como camino solo ese centro poblado.
+    
+  
+
+# Resolucion con Fuerza Bruta
+Para resolverlo con fuerza bruta fue sencillo, mediante "itertools" obtuvimos todas las posibilidades de las conexiones de nodo de un distrito y sus centros poblados. Para luego validar cuál es la distancia mínima y asi retornas el camino que cumple como solución. Esta solucion al ser de complejdad **O(N!)** consume muchos recursos y tiempo para lograr obtener la solución deseado y en algunos casos por falta de estos no se puede obtener la solución.
+
+![Fuerza Bruta Solucion](https://media.discordapp.net/attachments/708078392376950807/839262741704212540/51a43df8-64c1-4a51-afcc-3219118f6695.png)
