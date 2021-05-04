@@ -12,6 +12,7 @@
  - U201819681 Mac Kay Rodriguez, Lino Raul
  - U20181a275 Tejada Silva, Cledmir Gerardo
  - U20181a576 Jauregui Gonzales, Daniel
+ - U201722579 Yuen Delgado, Alonso Manuel
 
 
 # Introducción
