@@ -156,7 +156,7 @@ def createGraph(centrosPoblados):
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
     #path = findTspBruteForce(G)
-    path = bfs(G)
+    path = DFS(G)
 
     for i in path:
         print(i)
@@ -214,6 +214,36 @@ def bfs(G):
         del queue[0]
 
     return bfs_traversal_output
+
+def DFS(G):
+    path=[]
+    print(G.nodes())
+    print("Elige el elemento que desees: ")
+    a=input()
+    stack = [a]
+    path.append(G.nodes[a])
+    for u in G.nodes:
+        G.nodes[u]['visited'] = False
+        G.nodes[u]['π'] = -1
+    while stack:
+        u = stack.pop()
+        neighbors=False
+        aux = G.nodes[u]
+        aux2 = u
+        if not G.nodes[u]['visited']:
+            G.nodes[u]['visited'] = True
+            minWeight = 99999999
+            for v in reversed(list(G.neighbors(u))):
+                if not G.nodes[v]['visited']:
+                    neighbors = True
+                if G.edges[(u,v)]['weight'] < minWeight and not G.nodes[v]['visited']:
+                    minWeight = G.edges[(u,v)]['weight']
+                    aux = G.nodes[v]
+                    aux2 = v
+            if neighbors:
+                stack.append(aux2)
+                path.append(aux)
+    return path
     
 
 def loadMapa(CentrosPoblados):
