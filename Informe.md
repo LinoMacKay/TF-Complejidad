@@ -71,3 +71,7 @@ DFS es un algoritmo de búsqueda que se utiliza en gráfos. La estrategia de DFS
 Para resolverlo con fuerza bruta fue sencillo, mediante "itertools" obtuvimos todas las posibilidades de las conexiones de nodo de un distrito y sus centros poblados. Para luego validar cuál es la distancia mínima y asi retornas el camino que cumple como solución. Esta solucion al ser de complejdad **O(N!)** consume muchos recursos y tiempo para lograr obtener la solución deseado y en algunos casos por falta de estos no se puede obtener la solución.
 
 ![Fuerza Bruta Solucion](https://media.discordapp.net/attachments/708078392376950807/839262741704212540/51a43df8-64c1-4a51-afcc-3219118f6695.png)
+
+
+# Resolucion con DFS
+Para resolver este problema se hizo una variacion al algoritmo. Esta variacion consiste en que al momento de elegir a unos de sus vecinos eliga al que esta a menor distancia, luego buscar a los vecinos del nodo elegido anteriormente y volver a hacer el procedimiento anterior. Esto se repite hasta que los todos los vecinos del nodo esten visitados. Esta solucion es **O(b^n)** por lo que no es tan optima en la mayoria de los casos, sin embargo en nuestro problema si es eficiente en cuanto a velocidad, ya que la idea es visitar todos los centros poblados del distrito. Por otro lado este algortmo no garantiza que sea el camino mas corto, ya que al elegir solo el menor de sus vecinos del actual nodo, no tiene en cuneta una vista mas amplia.
