@@ -5,6 +5,7 @@ from shapely.geometry import Point,Polygon
 import networkx as nx
 import math
 from itertools import permutations
+import heapq as hq
 
 class Departamento:
     def __init__(self,nombreDepartamento):
@@ -156,8 +157,8 @@ def createGraph(centrosPoblados):
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
     #path = findTspBruteForce(G)
-    path = DFS(G)
-
+    #path = DFS(G)
+    path = dijkstra(G)
     for i in path:
         print(i)
         print("->")
@@ -245,6 +246,38 @@ def DFS(G):
                 path.append(aux)
     return path
     
+def dijkstra(G):
+
+    print(G.nodes())
+    print("Elige el elemento que desees: ")
+    b=input()
+    q = [b]
+    dijkstra_output = []
+    for u in G.nodes:
+        G.nodes[u]['visited'] = False
+        G.nodes[u]['path']= -1
+        G.nodes[u]['cost']= math.inf
+    G.nodes[b]['cost'] = 0
+    q = [(0, b)]
+
+    while q:
+        current_g, u = hq.heappop(q)
+        dijkstra_output.append(u)
+        if not G.nodes[u]['visited']:
+            G.nodes[u]['visited']= True
+            for v in G.neighbors(u):
+                if not G.nodes[v]['visited']:
+                    distancia = G.edges[u, v]['weight']
+                    suma = current_g + distancia
+                    costo  = G.nodes[v]['cost']
+                if suma < costo:
+                    G.nodes[v]['cost']= suma
+                    G.nodes[v]['path'] = u
+                    hq.heappush(q, (suma, v))
+
+    print("El costo del grafo es: " + str(costo))
+    return dijkstra_output
+
 
 def loadMapa(CentrosPoblados):
     crs ='epsg:4326'
