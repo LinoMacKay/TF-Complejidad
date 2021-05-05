@@ -81,4 +81,4 @@ Mediante esta estrategia, se escoge el nodo que se desea recorrer. Luego, se cre
 
 
 # Resolución con Dijkstra
-Otro algoritmo que hicimos para resolver este problema fue Dijkstra. Este algoritmo consiste en crear un bucle for que se encargara de recorrer los nodos del grafos. En el arreglo, se inicializar el arreglo de visitados en 'False', el padre en '-1' y el costo en infinito con la constante 'math.inf'.
+Otro algoritmo que hicimos para resolver este problema fue Dijkstra. Este algoritmo consiste en crear un bucle for que se encargara de recorrer los nodos del grafos. En el arreglo, se inicializar el arreglo de visitados en 'False', el padre en '-1' y el costo en infinito con la constante 'math.inf'. HOLA
