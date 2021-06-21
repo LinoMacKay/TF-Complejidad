@@ -159,6 +159,7 @@ def createGraph(centrosPoblados):
     #path = findTspBruteForce(G)
     #path = DFS(G)
     path = dijkstra(G)
+    #path = bfs(G)
     for i in path:
         print(i)
         print("->")
@@ -305,6 +306,32 @@ def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
     return centrosPoblados
 
 
+def getAllCaminosByListOfProvincias(Departamento,data):
+    provincias = []
+    centrosPoblados = []
+    for departamento in data:
+        if(departamento.nombreDepartamento == Departamento ):
+                provincias = departamento.provincias
+
+    for provincia in provincias:
+        for distrito in provincia.distritos:
+            centrosPoblados.append(selectSpecificCenter(data,Departamento,provincia.nombreProvincia,distrito.nombreDistrito))
+    return centrosPoblados
+
+def getAllCaminosByListOfDepartamentos(data):
+    centrosPoblados = []
+    departamentos1 = []
+    for departamento in data:
+            departamentos1.append(departamento)
+
+    for departamento in departamentos1:
+        for provincia in departamento.provincias:
+            for distrito in provincia.distritos:
+                centrosPoblados.append(selectSpecificCenter(data,departamento.nombreDepartamento,provincia.nombreProvincia,distrito.nombreDistrito))
+    return centrosPoblados
+
+
+
 def getProvinciasByDepartamentoName(Departamento,data):
     provincias = []
     for departamento in data:
@@ -314,7 +341,7 @@ def getProvinciasByDepartamentoName(Departamento,data):
 
 
 def LoadData():
-    f = open('Data2.json',encoding='UTF-8')
+    f = open('Data3.json',encoding='UTF-8')
     data = json.load(f)
     f.close()
     
@@ -323,23 +350,44 @@ def LoadData():
     loadDistritos(DataToUse,data)
     loadCentroPoblado(DataToUse,data)
     
-    print("Escriba una Departamento y Provincia \n")
-    for departamento in DataToUse:
-        print(departamento.nombreDepartamento)
-    Departamento = input()
-    Departamento = Departamento.upper()
-    ProvinciasDisponibles = getProvinciasByDepartamentoName(Departamento,DataToUse)
+    '''
+        Si escogemos a nivel de DEPARTAMENTOS (Perú)
+    '''
 
-    print("Escriba una provincia \n")
-    for provincia in ProvinciasDisponibles:
-        print(provincia.nombreProvincia)
-    Provincia = input()
-    Provincia = Provincia.upper()
-    print("\n")
-    centrosPoblados=getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
+    centrosPoblados = getAllCaminosByListOfDepartamentos(DataToUse)
     createGraph(centrosPoblados)
-    
-    #loadMapa(centrosPoblados)
+    '''
+        Si escogemos a nivel de provincias
+    '''
+
+    #for departamento in DataToUse:
+    #    print(departamento.nombreDepartamento)
+    #
+    #Departamento = input()
+    #Departamento = Departamento.upper()
+    #centrosPoblados = getAllCaminosByListOfProvincias(Departamento,DataToUse)
+    #createGraph(centrosPoblados)
+
+    '''
+        Si escogemos a nivel de distritos
+    '''
+    #print("Escriba una Departamento y Provincia \n")
+    #for departamento in DataToUse:
+    #    print(departamento.nombreDepartamento)
+    #Departamento = input()
+    #Departamento = Departamento.upper()
+    #ProvinciasDisponibles = getProvinciasByDepartamentoName(Departamento,DataToUse)
+    #
+    #print("Escriba una provincia \n")
+    #for provincia in ProvinciasDisponibles:
+    #    print(provincia.nombreProvincia)
+    #Provincia = input()
+    #Provincia = Provincia.upper()
+    #print("\n")
+    #centrosPoblados=getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
+    #createGraph(centrosPoblados)
+
+    loadMapa(centrosPoblados)
     
     
 LoadData()
