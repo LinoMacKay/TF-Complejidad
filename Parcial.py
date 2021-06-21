@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from shapely.geometry import Point,Polygon
 import networkx as nx
 import math
+from random import choice, sample
 from itertools import permutations
 import heapq as hq
 
@@ -157,8 +158,8 @@ def createGraph(centrosPoblados):
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
     #path = findTspBruteForce(G)
-    #path = DFS(G)
-    path = dijkstra(G)
+    path = DFS(G)
+    #path = dijkstra(G)
     #path = bfs(G)
     for i in path:
         print(i)
@@ -219,11 +220,10 @@ def bfs(G):
 
 def DFS(G):
     path=[]
-    print(G.nodes())
-    print("Elige el elemento que desees: ")
-    a=input()
-    stack = [a]
-    path.append(G.nodes[a])
+    nodes = list(G.nodes())
+    a = sample(nodes, 1)
+    stack = [a[0]]
+    path.append(G.nodes[a[0]])
     for u in G.nodes:
         G.nodes[u]['visited'] = False
         G.nodes[u]['π'] = -1
