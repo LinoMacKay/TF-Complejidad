@@ -66,8 +66,6 @@ def loadDepartamentos(data):
         Departamentos.append(Departamentoguardar)
     return Departamentos
 
-
-
 def loadProvincias(departamentos,data):
     Provincias = []
     for i in departamentos:
@@ -106,7 +104,6 @@ def loadDistritos(departamentos,data):
                 addingDistrito.append(j)
             k.addDistritos(addingDistrito)
     
-
 def loadCentroPoblado(Departamentos,data):
     centrosPoblados = []
     for i in data:
@@ -137,7 +134,7 @@ def getDistancia(nodo1,nodo2):
     distancia = math.sqrt(d1+d2)
     return float(distancia)
 
-def createGraph(centrosPoblados):
+def createGraph(centrosPoblados,algtype):
     G = nx.Graph()
     x=0
     for i in centrosPoblados:
@@ -149,21 +146,25 @@ def createGraph(centrosPoblados):
             G.nodes[i[j].nombreCentroPoblado]['longitud'] = i[j].longitud
         x+=1
 
-    
-    
     for i,datai in G.nodes(data= True):
         for j, dataj in G.nodes(data = True):
             if(i != j):
                 G.add_edge(i,j)
                 G[i][j]['weight'] = getDistancia(datai,dataj)
     #nx.draw_networkx(G)
-    #path = findTspBruteForce(G)
-    path = DFS(G)
-    #path = dijkstra(G)
-    #path = bfs(G)
-    for i in path:
-        print(i)
-        print("->")
+
+    if(algtype == 1):
+        path = findTspBruteForce(G)
+    if(algtype == 2):
+        path = DFS(G)
+    if(algtype == 3):
+        path = dijkstra(G)
+    if(algtype == 4):
+        path = bfs(G)
+        
+    #for i in path:
+        #print(i)
+        #print("->")
 
 def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distritoNombre):
     for i in Departamentos:
@@ -280,6 +281,9 @@ def dijkstra(G):
     return dijkstra_output
 
 
+def PeruTsp1():
+
+
 def loadMapa(CentrosPoblados):
     crs ='epsg:4326'
     #street_map = gpd.read_file("TrabajoParcial\departamentos\DEPARTAMENTOS.shx")
@@ -299,12 +303,9 @@ def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
         for provincia in departamento.provincias:
             if(departamento.nombreDepartamento == Departamento and provincia.nombreProvincia == Provincia):
                 distritos = provincia.distritos
-
-
     for distrito in distritos:
         centrosPoblados.append(selectSpecificCenter(data,Departamento,Provincia,distrito.nombreDistrito))
     return centrosPoblados
-
 
 def getAllCaminosByListOfProvincias(Departamento,data):
     provincias = []
@@ -330,8 +331,6 @@ def getAllCaminosByListOfDepartamentos(data):
                 centrosPoblados.append(selectSpecificCenter(data,departamento.nombreDepartamento,provincia.nombreProvincia,distrito.nombreDistrito))
     return centrosPoblados
 
-
-
 def getProvinciasByDepartamentoName(Departamento,data):
     provincias = []
     for departamento in data:
@@ -349,13 +348,18 @@ def LoadData():
     loadProvincias(DataToUse,data)
     loadDistritos(DataToUse,data)
     loadCentroPoblado(DataToUse,data)
+
+
     
+
+
+
     '''
         Si escogemos a nivel de DEPARTAMENTOS (Perú)
     '''
 
-    centrosPoblados = getAllCaminosByListOfDepartamentos(DataToUse)
-    createGraph(centrosPoblados)
+    #centrosPoblados = getAllCaminosByListOfDepartamentos(DataToUse)
+    #createGraph(centrosPoblados)
     '''
         Si escogemos a nivel de provincias
     '''
