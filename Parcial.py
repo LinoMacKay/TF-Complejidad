@@ -335,45 +335,6 @@ def LoadData():
     loadCentroPoblado(DataToUse,data)
     PeruTsp1(DataToUse)
 
-    
 
-
-
-    '''
-        Si escogemos a nivel de DEPARTAMENTOS (Perú)
-    '''
-
-    #centrosPoblados = getAllCaminosByListOfDepartamentos(DataToUse)
-    #createGraph(centrosPoblados)
-    '''
-        Si escogemos a nivel de provincias
-    '''
-
-    #for departamento in DataToUse:
-    #    print(departamento.nombreDepartamento)
-    #
-    #Departamento = input()
-    #Departamento = Departamento.upper()
-    #centrosPoblados = getAllCaminosByListOfProvincias(Departamento,DataToUse)
-    #createGraph(centrosPoblados)
-
-    '''
-        Si escogemos a nivel de distritos
-    '''
-    #print("Escriba una Departamento y Provincia \n")
-    #for departamento in DataToUse:
-    #    print(departamento.nombreDepartamento)
-    #Departamento = input()
-    #Departamento = Departamento.upper()
-    #ProvinciasDisponibles = getProvinciasByDepartamentoName(Departamento,DataToUse)
-    #
-    #print("Escriba una provincia \n")
-    #for provincia in ProvinciasDisponibles:
-    #    print(provincia.nombreProvincia)
-    #Provincia = input()
-    #Provincia = Provincia.upper()
-    #print("\n")
-    #centrosPoblados=getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
-    #createGraph(centrosPoblados)    
     
 LoadData()
