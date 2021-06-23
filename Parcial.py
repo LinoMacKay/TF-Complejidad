@@ -162,9 +162,7 @@ def createGraph(centrosPoblados,algtype):
     if(algtype == 4):
         path = bfs(G)
         
-    #for i in path:
-        #print(i)
-        #print("->")
+    return path
 
 def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distritoNombre):
     for i in Departamentos:
