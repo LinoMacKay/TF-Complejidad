@@ -137,14 +137,13 @@ def getDistancia(nodo1,nodo2):
 def createGraph(centrosPoblados,algtype):
     G = nx.Graph()
     x=0
-    for i in centrosPoblados:
-        n=len(list(i))
-        for j in range(n):
-            G.add_node(i[j].nombreCentroPoblado)
-            G.nodes[i[j].nombreCentroPoblado]['nombre'] = i[j].nombreCentroPoblado
-            G.nodes[i[j].nombreCentroPoblado]['latitud'] = i[j].latitud
-            G.nodes[i[j].nombreCentroPoblado]['longitud'] = i[j].longitud
-        x+=1
+    n=len(list(centrosPoblados))
+    for j in range(n):
+        G.add_node(centrosPoblados[j].nombreCentroPoblado)
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['nombre'] = centrosPoblados[j].nombreCentroPoblado
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['latitud'] = centrosPoblados[j].latitud
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['longitud'] = centrosPoblados[j].longitud
+    x+=1
 
     for i,datai in G.nodes(data= True):
         for j, dataj in G.nodes(data = True):
@@ -174,7 +173,6 @@ def selectSpecificCenter(Departamentos,departamentoNombre,provinciaNombre,distri
     for i in Distritos:
         if(i.nombreDistrito == distritoNombre):
             return i.centrosPoblados
-
 
 def findTspBruteForce(G):
     allPaths = []
@@ -279,20 +277,9 @@ def dijkstra(G):
     return dijkstra_output
 
 
-def PeruTsp1():
-
-
-def loadMapa(CentrosPoblados):
-    crs ='epsg:4326'
-    #street_map = gpd.read_file("TrabajoParcial\departamentos\DEPARTAMENTOS.shx")
-    #street_map.head()
-    #fig,ax = plt.subplots(figsize=(55,55))
-    #street_map.plot(ax = ax,alpha = 0.4, color="grey")
-    #df = street_map.DataFrame.from_records([centro.to_dict() for centro in CentrosPoblados])
-    #geometry = [Point(xy) for xy in zip(df['longitud'],df['latitud'])]
-    #geo_df = gpd.GeoDataFrame(df,crs = crs, geometry = geometry)
-    #geo_df.plot(ax = ax,markersize = 10,color = "blue",marker = ".", label="centro poblado")
-    #plt.legend(prop={'size':15})
+def PeruTsp1(DataToUse):
+    centrosPoblados=getAllCaminosByListOfDistricts('UCAYALI','CORONEL PORTILLO',DataToUse)
+    createGraph(centrosPoblados[0],1)
 
 def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
     distritos = []
@@ -346,7 +333,7 @@ def LoadData():
     loadProvincias(DataToUse,data)
     loadDistritos(DataToUse,data)
     loadCentroPoblado(DataToUse,data)
-
+    PeruTsp1(DataToUse)
 
     
 
@@ -387,9 +374,6 @@ def LoadData():
     #Provincia = Provincia.upper()
     #print("\n")
     #centrosPoblados=getAllCaminosByListOfDistricts(Departamento,Provincia,DataToUse)
-    #createGraph(centrosPoblados)
-
-    loadMapa(centrosPoblados)
-    
+    #createGraph(centrosPoblados)    
     
 LoadData()
