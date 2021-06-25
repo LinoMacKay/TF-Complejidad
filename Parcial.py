@@ -159,6 +159,10 @@ def createGraph(centrosPoblados, algtype):
         G.nodes[centrosPoblados[j].nombreCentroPoblado]['nombre'] = centrosPoblados[j].nombreCentroPoblado
         G.nodes[centrosPoblados[j].nombreCentroPoblado]['latitud'] = centrosPoblados[j].latitud
         G.nodes[centrosPoblados[j].nombreCentroPoblado]['longitud'] = centrosPoblados[j].longitud
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['provincia'] = centrosPoblados[j].provincia
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['departamento'] = centrosPoblados[j].departamento
+        G.nodes[centrosPoblados[j].nombreCentroPoblado]['distrito'] = centrosPoblados[j].distrito
+
     x += 1
 
     for i, datai in G.nodes(data=True):
@@ -298,13 +302,34 @@ def dijkstra(G):
     return dijkstra_output
 
 
-def PeruTsp1(DataToUse):
-    centrosPoblados = getAllCaminosByListOfDistricts(
-        'CUSCO', 'ACOMAYO', DataToUse)
-    caminos = []
+def PeruTsp1(Departamentos):
+    caminoDepartamentos = {}
+    caminoProvincias = {}
+    caminoDistritos = []
+    centrosPoblados = getAllCaminosByListOfDepartamentos(Departamentos)
+
     for i in range(len(centrosPoblados)):
-        caminos.append(createGraph(centrosPoblados[i], 1))
-    print(caminos)
+        if(len(centrosPoblados[i]) <= 7):
+            caminoDistritos.append(createGraph(centrosPoblados[i], 1))
+
+    # Creando un diccionario de todas las provincias
+    for i in range(len(caminoDistritos)):
+        caminoProvincias.update({caminoDistritos[i][0][1]['provincia']: []})
+        caminoDepartamentos.update(
+            {caminoDistritos[i][0][1]['departamento']: []})
+
+    # Agregando todos los caminos de los distritos a las provincias
+    for caminoPorDistrito in caminoDistritos:
+        caminoprincipal = caminoPorDistrito[0][1]
+        caminoProvincias[caminoprincipal['provincia']].append(
+            caminoPorDistrito)
+
+    for caminoPorProvincia in caminoProvincias:
+        departamento = caminoProvincias[caminoPorProvincia][0][0][1]['departamento']
+        caminoDepartamentos[departamento].append(
+            caminoProvincias[caminoPorProvincia])
+
+    print(caminoDepartamentos)
 
 
 def getAllCaminosByListOfDistricts(Departamento, Provincia, data):
