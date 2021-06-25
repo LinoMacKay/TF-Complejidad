@@ -193,27 +193,51 @@ def findTspBruteForce(G):
         return allPaths[0]
 
 def bfs(G):
-    
-    print(G.nodes())
-    print("Elige el elemento que desees: ")
-    a=input()
-    queue = [a]
-    bfs_traversal_output = []
+    path = []
+    noPaths = []
+    nodes = list(G.nodes())
+    a = sample(nodes, 1)
+    queue = [a[0]]
+    path.append(G.nodes[a[0]])
     for u in G.nodes:
         G.nodes[u]['visited']= False
         G.nodes[u]['π']= -1
-    G.nodes[a]['visited'] = True
+    G.nodes[a[0]]['visited'] = True 
     while queue:
         u = queue[0]
-        bfs_traversal_output.append(u)
+        aux = G.nodes[u]
+        aux2 = u 
+        aux4 = u
+        aux5 =G.nodes[u]
+        minWeight = 99999999
         for v in G.neighbors(u):
             if not G.nodes[v]['visited']:
                 G.nodes[v]['visited'] = True
-                G.nodes[v]['π'] = u
                 queue.append(v)
+            if G.edges[(u,v)]['weight'] < minWeight:
+                    
+                    minWeight = G.edges[(u,v)]['weight']
+                    aux2 = v
+                    aux = G.nodes[v]
+        
+        if aux4 == aux2:
+            noPaths.append(aux5)
+        else:
+            if G.edges[(aux4,aux2)]['weight'] == minWeight:
+                if aux not in path:
+                    if aux5 in path:
+                        path.append(aux)
+                    else:
+                        path.append(aux5)
+                        path.append(aux)
+                elif aux in path:
+                    if aux5 in path:
+                        noPaths.append(aux)
+                        noPaths.append(aux5)
+                    else:
+                        path.append(aux5)
         del queue[0]
-
-    return bfs_traversal_output
+    return path
 
 def DFS(G):
     path=[]
@@ -277,9 +301,34 @@ def dijkstra(G):
     return dijkstra_output
 
 
-def PeruTsp1(DataToUse):
-    centrosPoblados=getAllCaminosByListOfDistricts('UCAYALI','CORONEL PORTILLO',DataToUse)
-    createGraph(centrosPoblados[0],1)
+def PeruTsp1(Departamentos):
+    caminoDepartamentos = {}
+    caminoProvincias = {}
+    caminoDistritos = []
+    centrosPoblados = getAllCaminosByListOfDepartamentos(Departamentos)
+
+    for i in range(len(centrosPoblados)):
+        if(len(centrosPoblados[i]) <= 7):
+            caminoDistritos.append(createGraph(centrosPoblados[i], 1))
+
+    # Creando un diccionario de todas las provincias
+    for i in range(len(caminoDistritos)):
+        caminoProvincias.update({caminoDistritos[i][0][1]['provincia']: []})
+        caminoDepartamentos.update(
+            {caminoDistritos[i][0][1]['departamento']: []})
+
+    # Agregando todos los caminos de los distritos a las provincias
+    for caminoPorDistrito in caminoDistritos:
+        caminoprincipal = caminoPorDistrito[0][1]
+        caminoProvincias[caminoprincipal['provincia']].append(
+            caminoPorDistrito)
+
+    for caminoPorProvincia in caminoProvincias:
+        departamento = caminoProvincias[caminoPorProvincia][0][0][1]['departamento']
+        caminoDepartamentos[departamento].append(
+            caminoProvincias[caminoPorProvincia])
+
+    print(caminoDepartamentos)
 
 def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
     distritos = []
@@ -292,28 +341,29 @@ def getAllCaminosByListOfDistricts(Departamento,Provincia,data):
         centrosPoblados.append(selectSpecificCenter(data,Departamento,Provincia,distrito.nombreDistrito))
     return centrosPoblados
 
-def getAllCaminosByListOfProvincias(Departamento,data):
-    provincias = []
-    centrosPoblados = []
-    for departamento in data:
-        if(departamento.nombreDepartamento == Departamento ):
-                provincias = departamento.provincias
-
-    for provincia in provincias:
-        for distrito in provincia.distritos:
-            centrosPoblados.append(selectSpecificCenter(data,Departamento,provincia.nombreProvincia,distrito.nombreDistrito))
-    return centrosPoblados
-
+#def getAllCaminosByListOfProvincias(Departamento,data):
+#    provincias = []
+#    centrosPoblados = []
+#    for departamento in data:
+#        if(departamento.nombreDepartamento == Departamento ):
+#                provincias = departamento.provincias
+#
+#    for provincia in provincias:
+#        for distrito in provincia.distritos:
+#            centrosPoblados.append(selectSpecificCenter(data,Departamento,provincia.nombreProvincia,distrito.nombreDistrito))
+#    return centrosPoblados
+#
 def getAllCaminosByListOfDepartamentos(data):
     centrosPoblados = []
     departamentos1 = []
     for departamento in data:
-            departamentos1.append(departamento)
+        departamentos1.append(departamento)
 
     for departamento in departamentos1:
         for provincia in departamento.provincias:
             for distrito in provincia.distritos:
-                centrosPoblados.append(selectSpecificCenter(data,departamento.nombreDepartamento,provincia.nombreProvincia,distrito.nombreDistrito))
+                centrosPoblados.append(selectSpecificCenter(
+                    data, departamento.nombreDepartamento, provincia.nombreProvincia, distrito.nombreDistrito))
     return centrosPoblados
 
 def getProvinciasByDepartamentoName(Departamento,data):
