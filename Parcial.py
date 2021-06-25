@@ -302,7 +302,7 @@ def dijkstra(G):
     return dijkstra_output
 
 
-def PeruTsp1(Departamentos):
+def PeruTspBruteForce(Departamentos):
     caminoDepartamentos = {}
     caminoProvincias = {}
     caminoDistritos = []
@@ -329,7 +329,22 @@ def PeruTsp1(Departamentos):
         caminoDepartamentos[departamento].append(
             caminoProvincias[caminoPorProvincia])
 
-    print(caminoDepartamentos)
+    caminoFinal = []
+    for departamento in caminoDepartamentos:
+        for caminoPorDepartamento in caminoDepartamentos[departamento]:
+            for caminoporProvincia in caminoPorDepartamento:
+                caminoFinal.append(caminoporProvincia)
+
+    caminoForJson = []
+    for camino in caminoFinal:
+        for caminoIndividual in camino:
+            caminoForJson.append({
+                "cp": caminoIndividual[1]['nombre'],
+                "lat": float(caminoIndividual[1]['latitud']),
+                "lon": float(caminoIndividual[1]['longitud'])
+            })
+    print(caminoForJson)
+    return caminoForJson
 
 
 def getAllCaminosByListOfDistricts(Departamento, Provincia, data):
@@ -390,7 +405,7 @@ def LoadData():
     loadProvincias(DataToUse, data)
     loadDistritos(DataToUse, data)
     loadCentroPoblado(DataToUse, data)
-    PeruTsp1(DataToUse)
+    PeruTspBruteForce(DataToUse)
 
 
 LoadData()
