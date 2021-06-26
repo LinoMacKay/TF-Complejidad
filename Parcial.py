@@ -405,7 +405,7 @@ def LoadData():
     loadProvincias(DataToUse, data)
     loadDistritos(DataToUse, data)
     loadCentroPoblado(DataToUse, data)
-    PeruTspBruteForce(DataToUse)
+    return PeruTspBruteForce(DataToUse)
 
 
 LoadData()
