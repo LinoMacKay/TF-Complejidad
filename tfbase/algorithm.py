@@ -1,6 +1,10 @@
 import json
 import pandas as pd
 
+import sys
+from Parcial import LoadData
+sys.path.append('../')
+
 
 url = "../data/poblaciones.csv"
 
@@ -30,14 +34,16 @@ def algorithm():
 
 # Utilizar peru1
 def peru1():
-    data = pd.read_csv(url)
-    responsePath = []
-    for i, row in data.iterrows():
-        responsePath.append({"cp": row["CENTRO POBLADO"],
-                             "lat": float(row["LATITUD"]),
-                             "lon": float(row["LONGITUD"])})
 
-    return json.dumps(responsePath)
+    data = LoadData()
+    #data = pd.read_csv(url)
+    #responsePath = []
+    # for i, row in data.iterrows():
+    #    responsePath.append({"cp": row["CENTRO POBLADO"],
+    #                         "lat": float(row["LATITUD"]),
+    #                         "lon": float(row["LONGITUD"])})
+
+    return json.dumps(data)
 
 
 def peru2():
