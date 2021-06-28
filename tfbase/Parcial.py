@@ -413,6 +413,49 @@ def PeruTspBFS(Departamentos):
             })
     print(caminoForJson)
     return caminoForJson
+
+def PeruTspDFS(Departamentos):
+    caminoDepartamentos = {}
+    caminoProvincias = {}
+    caminoDistritos = []
+    centrosPoblados = getAllCaminosByListOfDepartamentos(Departamentos)
+
+    for i in range(len(centrosPoblados)):
+        if(len(centrosPoblados[i]) <= 7):
+            caminoDistritos.append(createGraph(centrosPoblados[i], 2))
+
+    
+    for i in range(len(caminoDistritos)):
+        caminoProvincias.update({caminoDistritos[i][0]['provincia']: []})
+        caminoDepartamentos.update(
+            {caminoDistritos[i][0]['departamento']: []})
+
+    for caminoPorDistrito in caminoDistritos:
+        caminoprincipal = caminoPorDistrito[0]
+        caminoProvincias[caminoprincipal['provincia']].append(
+            caminoPorDistrito)
+
+    for caminoPorProvincia in caminoProvincias:
+        departamento = caminoProvincias[caminoPorProvincia][0][0]['departamento']
+        caminoDepartamentos[departamento].append(
+            caminoProvincias[caminoPorProvincia])
+
+    caminoFinal = []
+    for departamento in caminoDepartamentos:
+        for caminoPorDepartamento in caminoDepartamentos[departamento]:
+            for caminoporProvincia in caminoPorDepartamento:
+                caminoFinal.append(caminoporProvincia)
+
+    caminoForJson = []
+    for camino in caminoFinal:
+        for caminoIndividual in camino:
+            caminoForJson.append({
+                "cp": caminoIndividual['nombre'],
+                "lat": float(caminoIndividual['latitud']),
+                "lon": float(caminoIndividual['longitud'])
+            })
+    print(caminoForJson)
+    return caminoForJson
     
 
 
@@ -474,8 +517,9 @@ def LoadData():
     loadProvincias(DataToUse, data)
     loadDistritos(DataToUse, data)
     loadCentroPoblado(DataToUse, data)
-    #return PeruTspBruteForce(DataToUse)
-    return PeruTspBFS(DataToUse)
+    #return PeruTspBruteForcse(DataToUse)
+    return PeruTspDFS(DataToUse)
+    #return PeruTspBFS(DataToUse)
 
 
 LoadData()
