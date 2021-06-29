@@ -294,36 +294,33 @@ def DFS(G):
 
 
 def dijkstra(G):
+    path= []
+    nodes = list(G.nodes()) 
+    distancia=[]
+    a = sample(nodes, 1)
+    queue = [a[0]]
 
-    print(G.nodes())
-    print("Elige el elemento que desees: ")
-    b = input()
-    q = [b]
-    dijkstra_output = []
+    path.append(G.nodes[a[0]])
     for u in G.nodes:
         G.nodes[u]['visited'] = False
-        G.nodes[u]['path'] = -1
-        G.nodes[u]['cost'] = math.inf
-    G.nodes[b]['cost'] = 0
-    q = [(0, b)]
+    G.nodes[a[0]]['visited']=True
 
-    while q:
-        current_g, u = hq.heappop(q)
-        dijkstra_output.append(u)
-        if not G.nodes[u]['visited']:
-            G.nodes[u]['visited'] = True
-            for v in G.neighbors(u):
-                if not G.nodes[v]['visited']:
-                    distancia = G.edges[u, v]['weight']
-                    suma = current_g + distancia
-                    costo = G.nodes[v]['cost']
-                if suma < costo:
-                    G.nodes[v]['cost'] = suma
-                    G.nodes[v]['path'] = u
-                    hq.heappush(q, (suma, v))
+    while not len(queue)==0:
+        u= queue.pop()
+        aux2 = u
+        minDistance= 9999999
+        if not G.nodes[aux2]['visited']:
+            G.noddes[aux2]['visited']=True
+            for nodo in queue:
+                if not G.nodes[nodo]['visited']:
+                    distancia = G.nodes[aux2,nodo]['weight']
+                    if distancia[aux2]<minDistance:
+                        minDistance= distancia[aux2]
+                        nodo_aux=nodo                  
+                    nodo_minDistance=nodo_aux
+                    queue.remove(nodo_minDistance)
 
-    print("El costo del grafo es: " + str(costo))
-    return dijkstra_output
+    return path
 
 
 def PeruTspBruteForce(Departamentos):
@@ -380,6 +377,49 @@ def PeruTspBFS(Departamentos):
     for i in range(len(centrosPoblados)):
         if(len(centrosPoblados[i]) <= 7):
             caminoDistritos.append(createGraph(centrosPoblados[i], 4))
+
+    
+    for i in range(len(caminoDistritos)):
+        caminoProvincias.update({caminoDistritos[i][0]['provincia']: []})
+        caminoDepartamentos.update(
+            {caminoDistritos[i][0]['departamento']: []})
+
+    for caminoPorDistrito in caminoDistritos:
+        caminoprincipal = caminoPorDistrito[0]
+        caminoProvincias[caminoprincipal['provincia']].append(
+            caminoPorDistrito)
+
+    for caminoPorProvincia in caminoProvincias:
+        departamento = caminoProvincias[caminoPorProvincia][0][0]['departamento']
+        caminoDepartamentos[departamento].append(
+            caminoProvincias[caminoPorProvincia])
+
+    caminoFinal = []
+    for departamento in caminoDepartamentos:
+        for caminoPorDepartamento in caminoDepartamentos[departamento]:
+            for caminoporProvincia in caminoPorDepartamento:
+                caminoFinal.append(caminoporProvincia)
+
+    caminoForJson = []
+    for camino in caminoFinal:
+        for caminoIndividual in camino:
+            caminoForJson.append({
+                "cp": caminoIndividual['nombre'],
+                "lat": float(caminoIndividual['latitud']),
+                "lon": float(caminoIndividual['longitud'])
+            })
+    print(caminoForJson)
+    return caminoForJson
+
+def PeruTspDjikstra(Departamentos):
+    caminoDepartamentos = {}
+    caminoProvincias = {}
+    caminoDistritos = []
+    centrosPoblados = getAllCaminosByListOfDepartamentos(Departamentos)
+
+    for i in range(len(centrosPoblados)):
+        if(len(centrosPoblados[i]) <= 7):
+            caminoDistritos.append(createGraph(centrosPoblados[i], 3))
 
     
     for i in range(len(caminoDistritos)):
@@ -518,7 +558,8 @@ def LoadData():
     loadDistritos(DataToUse, data)
     loadCentroPoblado(DataToUse, data)
     #return PeruTspBruteForcse(DataToUse)
-    return PeruTspDFS(DataToUse)
+    #return PeruTspDFS(DataToUse)
+    return PeruTspDjikstra(DataToUse)
     #return PeruTspBFS(DataToUse)
 
 
