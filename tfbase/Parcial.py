@@ -175,7 +175,7 @@ def createGraph(centrosPoblados, algtype):
     if(algtype == 1):
         path = findTspBruteForce(G)
     if(algtype == 2):
-        path = DFS(G)
+        path = Prim(G)
     if(algtype == 3):
         path = dijkstra(G)
     if(algtype == 4):
@@ -263,7 +263,7 @@ def bfs(G):
     return path
 
 
-def DFS(G):
+def Prim(G):
     path = []
     nodes = list(G.nodes())
     a = sample(nodes, 1)
@@ -271,7 +271,6 @@ def DFS(G):
     path.append(G.nodes[a[0]])
     for u in G.nodes:
         G.nodes[u]['visited'] = False
-        G.nodes[u]['π'] = -1
     while stack:
         u = stack.pop()
         neighbors = False
@@ -454,7 +453,7 @@ def PeruTspDjikstra(Departamentos):
     print(caminoForJson)
     return caminoForJson
 
-def PeruTspDFS(Departamentos):
+def PeruTspPrim(Departamentos):
     caminoDepartamentos = {}
     caminoProvincias = {}
     caminoDistritos = []
@@ -558,8 +557,8 @@ def LoadData():
     loadDistritos(DataToUse, data)
     loadCentroPoblado(DataToUse, data)
     #return PeruTspBruteForce(DataToUse)
-    #return PeruTspDFS(DataToUse)
-    return PeruTspDjikstra(DataToUse)
+    return PeruTspPrim(DataToUse)
+    #return PeruTspDjikstra(DataToUse)
     #return PeruTspBFS(DataToUse)
 
 
